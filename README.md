@@ -57,7 +57,7 @@ https://github.com/user-attachments/assets/725bccd1-326c-4511-8ad2-9d9d3b8ac0ea
 
 ## 改版履歴
 
-- **v1.00** (2025-02-??)
+- **v1.00** (2025-02-12)
 
   - 初版．
 
