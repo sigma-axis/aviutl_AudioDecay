@@ -27,9 +27,6 @@ constinit struct ExEdit092 {
 	// called at: exedit_base + 0x1c1ea.
 	void* (*get_or_create_cache)(ExEdit::ObjectFilterIndex ofi, int w, int h, int bitcount, int v_func_id, int* old_cache_exists);
 
-	// 0x04a7e0
-	void(*update_any_exdata)(ExEdit::ObjectFilterIndex processing, const char* exdata_use_name);
-
 private:
 	void init_pointers(AviUtl::FilterPlugin* efp)
 	{
@@ -43,20 +40,8 @@ private:
 		};
 
 		pick_call_addr(get_or_create_cache, 0x01c1ea);
-		pick_addr(update_any_exdata, 0x04a7e0);
 	}
 } exedit{};
-
-
-////////////////////////////////
-// マルチスレッド関数のラッパー．
-////////////////////////////////
-static inline void multi_thread(auto&& func) {
-	exedit.fp->exfunc->exec_multi_thread_func([](int thread_id, int thread_num, void* param1, void* param2) {
-		auto pfunc = reinterpret_cast<decltype(&func)>(param1);
-		(*pfunc)(thread_id, thread_num);
-	}, &func, nullptr);
-}
 
 
 ////////////////////////////////
@@ -71,7 +56,7 @@ struct check_data {
 	};
 };
 
-#define PLUGIN_VERSION	"v0.01-test1"
+#define PLUGIN_VERSION	"v0.10-beta1"
 #define PLUGIN_AUTHOR	"sigma-axis"
 #define FILTER_INFO_FMT(name, ver, author)	(name##" "##ver##" by "##author)
 #define FILTER_INFO(name)	constexpr char filter_name[] = name, info[] = FILTER_INFO_FMT(name, PLUGIN_VERSION, PLUGIN_AUTHOR)
