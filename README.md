@@ -51,6 +51,8 @@ https://github.com/user-attachments/assets/725bccd1-326c-4511-8ad2-9d9d3b8ac0ea
 
   - `ビット深度` が最大値の `16.00` の場合は無視されます．
 
+  - 初期値は ON.
+
 
 ## TIPS
 
