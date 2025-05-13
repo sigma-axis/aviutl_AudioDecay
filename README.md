@@ -63,6 +63,10 @@ https://github.com/user-attachments/assets/725bccd1-326c-4511-8ad2-9d9d3b8ac0ea
 
 ## 改版履歴
 
+- **v1.02** (2025-05-14)
+
+  - 比率計算の割り算と掛け算を間違っていたのを修正．
+
 - **v1.01** (2025-05-14)
 
   - [クロスフェード](https://github.com/nazonoSAUNA/AudioCrossFade.eef)オブジェクトと組み合わせても正しく動作するように修正．
