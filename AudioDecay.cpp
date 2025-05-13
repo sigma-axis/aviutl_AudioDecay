@@ -56,7 +56,7 @@ struct check_data {
 	};
 };
 
-#define PLUGIN_VERSION	"v1.01"
+#define PLUGIN_VERSION	"v1.02-beta1"
 #define PLUGIN_AUTHOR	"sigma-axis"
 #define FILTER_INFO_FMT(name, ver, author)	(name##" "##ver##" by "##author)
 #define FILTER_INFO(name)	constexpr char filter_name[] = name, info[] = FILTER_INFO_FMT(name, PLUGIN_VERSION, PLUGIN_AUTHOR)
@@ -181,7 +181,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 			speed = 0.000'001 * efpip->audio_speed,
 			frame = 0.001 * milliframe;
 
-		step_rate *= static_cast<float>(std::abs(speed));
+		step_rate /= static_cast<float>(std::abs(speed));
 		if (speed >= 0 ? frame - speed < 0 : frame - speed >= efpip->frame_n) // 想定の前回描画フレームが範囲外．
 			is_head = true;
 	}
