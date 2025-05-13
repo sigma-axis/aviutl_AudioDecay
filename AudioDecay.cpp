@@ -56,7 +56,7 @@ struct check_data {
 	};
 };
 
-#define PLUGIN_VERSION	"v1.01-beta1"
+#define PLUGIN_VERSION	"v1.01-beta2"
 #define PLUGIN_AUTHOR	"sigma-axis"
 #define FILTER_INFO_FMT(name, ver, author)	(name##" "##ver##" by "##author)
 #define FILTER_INFO(name)	constexpr char filter_name[] = name, info[] = FILTER_INFO_FMT(name, PLUGIN_VERSION, PLUGIN_AUTHOR)
@@ -147,7 +147,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 	bool const
 		dither			= efp->check[idx_check::dither];
 
-	float const
+	float
 		step_rate = std::max(efpip->audio_rate /
 			static_cast<float>(std::clamp(raw_rate, min_rate, max_rate)), 1.0f),
 		// note that AviUtl handles only 16-bit depth buffers for audio.
@@ -157,7 +157,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 	// 過去音声データを保存するキャッシュを取得．
 	using i16 = int16_t;
 	struct {
-		int frame;
+		int milliframe;
 		float rate_size, rate_remainder;
 
 		// two channels at most.
@@ -173,11 +173,25 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 
 	if (cache == nullptr) return TRUE; // キャッシュを取得できなかった場合何もしない．
 
-	int const frame = efpip->frame + efpip->add_frame;
-	if (frame == 0 || frame < cache[0].frame || cache_exists_flag == 0)
-		// 新規キャッシュ，あるいは時間が巻き戻っているなら初期化．
+	int milliframe = 1000 * (efpip->frame + efpip->add_frame);
+	bool is_head = false;
+	if (efpip->audio_speed != 0) {
+		milliframe = efpip->audio_milliframe - 1000 * (efpip->frame_num - efpip->frame);
+		auto const
+			speed = 0.000'001 * efpip->audio_speed,
+			frame = 0.001 * milliframe;
+
+		step_rate *= static_cast<float>(std::abs(speed));
+		if (speed >= 0 ? frame - speed < 0 : frame - speed >= efpip->frame_n) // 想定の前回描画フレームが範囲外．
+			is_head = true;
+	}
+	else if (milliframe == 0) // 1フレーム目
+		is_head = true;
+
+	if (is_head || milliframe < cache[0].milliframe || cache_exists_flag == 0)
+		// 冒頭部，新規キャッシュ，あるいは時間が巻き戻っているなら初期化．
 		std::memset(cache, 0, 2 * sizeof(cache[0]));
-	else if (cache[0].frame == frame)
+	else if (cache[0].milliframe == milliframe)
 		// 同一フレームなので音声ソースの更新．読み込み元を巻き戻す．
 		cache[0] = cache[1];
 	else cache[1] = cache[0];
@@ -198,7 +212,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 		// ディザリングに利用する直前誤差をリセット．
 		state.dither[0] = state.dither[1] = 0;
 	}
-	state.frame = frame;
+	state.milliframe = milliframe;
 
 	// 音声データの読み書き込み先とサイズを特定．
 	i16* const data = efp == &effect ? efpip->audio_data : efpip->audio_p;
