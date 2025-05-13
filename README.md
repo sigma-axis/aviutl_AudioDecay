@@ -63,6 +63,12 @@ https://github.com/user-attachments/assets/725bccd1-326c-4511-8ad2-9d9d3b8ac0ea
 
 ## 改版履歴
 
+- **v1.01** (2025-05-14)
+
+  - [クロスフェード](https://github.com/nazonoSAUNA/AudioCrossFade.eef)オブジェクトと組み合わせても正しく動作するように修正．
+
+  - 「シーン(音声)」オブジェクト経由でスロー再生した場合ノイズが混じっていたのを修正．
+
 - **v1.00** (2025-02-12)
 
   - 初版．
