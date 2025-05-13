@@ -56,7 +56,7 @@ struct check_data {
 	};
 };
 
-#define PLUGIN_VERSION	"v1.00"
+#define PLUGIN_VERSION	"v1.01-beta1"
 #define PLUGIN_AUTHOR	"sigma-axis"
 #define FILTER_INFO_FMT(name, ver, author)	(name##" "##ver##" by "##author)
 #define FILTER_INFO(name)	constexpr char filter_name[] = name, info[] = FILTER_INFO_FMT(name, PLUGIN_VERSION, PLUGIN_AUTHOR)
@@ -169,7 +169,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 	int cache_exists_flag;
 	cache = reinterpret_cast<decltype(cache)>(exedit.get_or_create_cache(
 		efp->processing, (2 * sizeof(cache[0])) / sizeof(i16), 1, 8 * sizeof(i16),
-		efpip->v_func_idx, &cache_exists_flag));
+		0, &cache_exists_flag));
 
 	if (cache == nullptr) return TRUE; // キャッシュを取得できなかった場合何もしない．
 
@@ -214,9 +214,9 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 			// 一定数サンプルがたまったら，次の出力値を更新．
 			if (--state.rate_remainder <= 0) {
 				for (int c = 0; c < num_ch; c++) {
-					i16 carry = static_cast<i16>(std::roundf(sample[c] * (-state.rate_remainder)));
-					state.data[c] = static_cast<i16>(std::clamp<int>(static_cast<int>(std::roundf(
-						(state.rate_sum[c] - carry) / state.rate_size)),
+					i16 carry = static_cast<i16>(std::lroundf(sample[c] * (-state.rate_remainder)));
+					state.data[c] = static_cast<i16>(std::clamp<int>(std::lroundf(
+						(state.rate_sum[c] - carry) / state.rate_size),
 						std::numeric_limits<i16>::min(), std::numeric_limits<i16>::max()));
 					state.rate_sum[c] = carry;
 					if (dither) state.data[c] += state.dither[c];
@@ -235,8 +235,8 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip)
 		// バッファに書き込み．
 		if (step_depth > 1) {
 			for (int c = 0; c < num_ch; c++) {
-				sample[c] = std::clamp<int>(static_cast<int>(std::roundf(std::roundf(
-					state.data[c] / step_depth) * step_depth)),
+				sample[c] = std::clamp<int>(std::lroundf(std::roundf(
+					state.data[c] / step_depth) * step_depth),
 					std::numeric_limits<i16>::min(), std::numeric_limits<i16>::max());
 				if (dither) state.dither[c] = state.data[c] - sample[c];
 			}
