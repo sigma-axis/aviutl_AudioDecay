@@ -2,7 +2,7 @@
 
 AviUtl の拡張編集に「音声劣化」フィルタ効果とフィルタオブジェクトを追加するプラグインです．音声のサンプルレートやビットレートを疑似的に下げて，音質を意図的に落とします．
 
-[ダウンロードはこちら．](https://github.com/sigma-axis/aviutl_AudioDecay/releases)
+[ダウンロードはこちら．](https://github.com/sigma-axis/aviutl_AudioDecay/releases) [紹介動画．](https://www.nicovideo.jp/watch/sm44997398)
 
 ![劣化の例](https://github.com/user-attachments/assets/e5e3d35c-4689-41ff-9db7-2c19701331c5)
 
